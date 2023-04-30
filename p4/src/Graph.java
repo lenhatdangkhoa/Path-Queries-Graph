@@ -119,45 +119,52 @@ public class Graph {
         } // for
     } // void
 
-/*
-    public void findAllPaths(Vertex startVertex, String end) {
-        path.push(startVertex);
-        System.out.println(startVertex.value);
-        if (startVertex.edge.next == null) {
-            path.pop();
-            System.out.println("test");
-            return;
-        }
-        if (startVertex.value.equals(end)) {
-            Stack<Vertex> tempPath = new Stack<>();
-            while (!path.empty()) {
-                tempPath.push(path.pop());
-            }
-            while (!tempPath.empty()) {
-                Vertex temp = tempPath.pop();
-                System.out.println(temp.value + " -> ");
-                path.push(temp);
-            } // while
-        } //if
-        for (int i = 0; i < vertices.length; i++) {
-            if (vertices[i] != null && vertices[i].value.equals(startVertex.value)) {
-                currentPos = vertices[i];
-                while (currentPos != null && currentPos.edge.next != null) {
-                    for (int j = 0; j < vertices.length; j++) {
-                        if (vertices[j] != null && vertices[j].value.equals(vertices[i].value)) {
-                            currentPos = vertices[j];
-                        } // if
-                    } //for
-                    findAllPaths(currentPos.edge.next, end);
-                    //System.out.println(currentPos.edge.next.value);
-                    System.out.println("Curr: -> " + currentPos.edge.edgeValue);
-                    currentPos = currentPos.edge.next;
-                    //System.out.println(currentPos.value);
-                }// while
-                path.pop();
+    private int findMinPath() {
+        int min = allPaths.get(0).size();
+        for (int i = 0; i < allPaths.size(); i++) {
+            if (allPaths.get(i).size() <= min) {
+                min = allPaths.get(i).size();
+            } // if
+        } // for
+        return min;
+    } // findMinPath
+
+    public void printMinPaths(String start) {
+        int min = findMinPath();
+        for (Stack<Edge> stack : allPaths) {
+            if (stack.size() == min) {
+                Stack<Edge> replicate = (Stack<Edge>) stack.clone();
+                Stack<Edge> actualPath = new Stack<>();
+                while (!replicate.empty()) {
+                    actualPath.push(replicate.pop());
+                } // while
+                System.out.print(start + " -> ");
+                while (!actualPath.empty()) {
+                    Edge temp = actualPath.pop();
+                    System.out.print("[" + temp.edgeValue + "] -> "+ temp.nextValue + " -> ");
+                } // while
+                System.out.println("{endOfPath}");
             } // if
         } // for
 
-    } // findAllPaths
-    */
+    } // printMinPaths
+
+    public String findPathWithPattern(String start) {
+        String matchPath = "";
+        for (Stack<Edge> stack : allPaths) {
+            Stack<Edge> replicate = (Stack<Edge>) stack.clone();
+            Stack<Edge> actualPath = new Stack<>();
+            while (!replicate.empty()) {
+                actualPath.push(replicate.pop());
+            } // while
+            matchPath = start;
+            while (!actualPath.empty()) {
+                Edge temp = actualPath.pop();
+                matchPath += temp.nextValue;
+            } // while
+            //return matchPath;
+        } // for
+        return matchPath;
+        //System.out.println(matchPath);
+    } // findPathWithPattern
 } // class
