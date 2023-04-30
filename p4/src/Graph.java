@@ -5,144 +5,121 @@ import java.util.Scanner;
 import java.util.*;
 import java.io.File;
 
-class Vertex {
-    String value;
-    Edge edge;
-    boolean isVisited = false;
-
-    // Constructor
-    public Vertex() {
-        value = "";
-        edge = new Edge();
-    } // vertex
-    public Vertex(String value, Edge edge) {
-        this.value = value;
-        this.edge = edge;
-    } //
-
-
-} // class
-
-
 /**
  * Class Edge.
  */
 class Edge {
 
     String edgeValue;
-    Vertex next;
+    String nextValue;
 
     public Edge() {
         edgeValue = "";
-        next = new Vertex();
+        nextValue = "";
     } // edge()
 
-    public Edge(String value, Vertex next) {
+    public Edge(String value, String nextValue) {
         edgeValue = value;
-        this.next = next;
+        this.nextValue = nextValue;
     } // edge(val)
+
+    @Override
+    public String toString() {
+        return edgeValue + " -> " + nextValue;
+    } // void
 } //
 
 public class Graph {
-    Vertex[] vertices;
-    Vertex currentPos;
-    Stack<Vertex> path;
-    Stack[] allPaths;
+    HashMap<String, LinkedList<Edge>> graph;
+    Stack<Edge> path;
+    ArrayList<Stack<Edge>> allPaths;
     public Graph() {
-        vertices = new Vertex[500];
+        graph = new HashMap<>();
         path = new Stack<>();
-        allPaths = new Stack[500];
+        allPaths = new ArrayList<>();
     } // graph()
-
-    public Graph(int size) {
-        vertices = new Vertex[size];
-    } // graph(size)
-
 
     public void initializeGraph(File file) throws FileNotFoundException {
         Scanner read = new Scanner(file);
-        int size = 0;
-        while (read.hasNextLine()) {
-            size++;
-            read.nextLine();
-        } // while
-        read = new Scanner(file);
-        vertices = new Vertex[size];
-        int index= 0;
         while (read.hasNextLine()) {
             String[] path = read.nextLine().split(" ");
-            Vertex vertex = new Vertex(path[0], new Edge(null, null));
-            if (!vertexInArray(vertex)) {
-                vertices[index] = vertex;
-                vertex.edge.edgeValue = path[1];
-                vertex.edge.next = new Vertex(path[2], new Edge(null, null));
-                index++;
+            if (!graph.containsKey(path[0])) {
+                LinkedList<Edge> list = new LinkedList<>();
+                list.add(new Edge(path[1], path[2]));
+                graph.put(path[0], list);
             } else {
-                for (int i = 0; i < vertices.length; i++) {
-                    if (vertices[i] != null && vertices[i].value.equals(vertex.value)) {
-                        Vertex tempPointer = vertices[i];
-                        while (tempPointer.edge.next != null) {
-                            tempPointer = tempPointer.edge.next;
-                            if (tempPointer.edge.next == null) {
-                                tempPointer.edge.next = new Vertex(path[2], new Edge(null, null));
-                                tempPointer.edge.edgeValue = path[1];
-                                break;
-                            } // if
-
-
-                        } // while
-                    } // for
-                } // if-else
-            } // else
+                graph.get(path[0]).add(new Edge(path[1], path[2]));
+            }
         } // while
         read = new Scanner(file);
         while (read.hasNextLine()) {
             String[] path = read.nextLine().split(" ");
-            Vertex vertex = new Vertex(path[2], new Edge(null, null));
-            if (!vertexInArray(vertex)) {
-                vertices[index] = vertex;
-                index++;
+            if (!graph.containsKey(path[2])) {
+                graph.put(path[2], new LinkedList<>());
             } // if
         } // while
-
     } // initializeGraph
 
     public void printGraph() {
-        for (int i = 0; i < vertices.length; i++) {
-            if (vertices[i] != null)
-                printHelper(i);
+        for (String key: graph.keySet()) {
+            System.out.print(key + ": ");
+            for (Edge edge : graph.get(key)) {
+                    System.out.print(edge.edgeValue + " -> " + edge.nextValue + " | ");
+            } // for
+            System.out.println();
         } // for
     } // printGraph
 
-    private void printHelper(int index) {
-        Vertex pointer = vertices[index];
-        if (pointer.edge.next == null) {
-            System.out.println(pointer.value);
-        } //
-        while (pointer.edge.next != null) {
-            System.out.print(pointer.value +
-            " -> [" + pointer.edge.edgeValue + "] -> ");
-            pointer = pointer.edge.next;
-            if (pointer.edge.next == null) {
-                System.out.println(pointer.value);
-            } //if
-        } // while
-    } //
-    /**
-     * A helper method for initializeGraph to check for duplicate vertices.
-     * @param vertex the vertex
-     * @return whether the vertex is in the array
-     */
-    private boolean vertexInArray(Vertex vertex) {
-        for (int i = 0; i < vertices.length; i++) {
-            if (vertices[i] == null) return false;
-            else if (vertices[i] != null && vertices[i].value.equals(vertex.value)) {
-                return true;
+    public void findAllPaths(String start, String end) {
+        if (start.equals(end)) {
+            Stack<Edge> tempPath = (Stack<Edge>) path.clone();
+            allPaths.add(tempPath);
+            return;
+        }
+        for (Edge edge : graph.get(start)) {
+            path.push(edge);
+            if (edge.nextValue != null) findAllPaths(edge.nextValue,  end);
+            path.pop();
+        } // for
+
+
+    } // findAllPaths
+    public void printAllPaths(String start) {
+        for (Stack<Edge> stack : allPaths) {
+            Stack<Edge> replicate = (Stack<Edge>) stack.clone();
+            Stack<Edge> actualPath = new Stack<>();
+            while (!replicate.empty()) {
+                actualPath.push(replicate.pop());
+            } // while
+            System.out.print(start + " -> ");
+            while (!actualPath.empty()) {
+                Edge temp = actualPath.pop();
+                System.out.print("[" + temp.edgeValue + "] -> "+ temp.nextValue + " -> ");
+            } // while
+            System.out.println("{endOfPath}");
+        } // for
+
+    } // void
+
+    public void printAllPaths(String start, int count) {
+        for (Stack<Edge> stack : allPaths) {
+            if (stack.size() == count) {
+                Stack<Edge> replicate = (Stack<Edge>) stack.clone();
+                Stack<Edge> actualPath = new Stack<>();
+                while (!replicate.empty()) {
+                    actualPath.push(replicate.pop());
+                } // while
+                System.out.print(start + " -> ");
+                while (!actualPath.empty()) {
+                    Edge temp = actualPath.pop();
+                    System.out.print("[" + temp.edgeValue + "] -> "+ temp.nextValue + " -> ");
+                } // while
+                System.out.println("{endOfPath}");
             } // if
         } // for
-        return false;
-    } // vertexInArray
+    } // void
 
+/*
     public void findAllPaths(Vertex startVertex, String end) {
         path.push(startVertex);
         System.out.println(startVertex.value);
@@ -182,5 +159,5 @@ public class Graph {
         } // for
 
     } // findAllPaths
-
+    */
 } // class

@@ -16,13 +16,10 @@ public class Driver {
             String start = keyboard.nextLine();
             System.out.print("Please enter the ending node: ");
             String end = keyboard.nextLine();
-            Vertex startVertex = new Vertex(start, new Edge(null, null));
-            for (int i = 0; i < graph.vertices.length; i++) {
-                if (graph.vertices[i] != null && graph.vertices[i].value.equals(start)) {
-                    startVertex = graph.vertices[i];
-                } //if
-            }
-            graph.findAllPaths(startVertex, end);
+            graph.findAllPaths(start, end);
+            System.out.println("All paths from \"" + start + "\" to \"" + end + "\" :");
+            graph.printAllPaths(start);
+            graph.printAllPaths(start, 1);
         } catch (FileNotFoundException fnfe) {
             System.err.println(fnfe);
         } // try-catch
