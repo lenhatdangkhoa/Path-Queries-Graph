@@ -12,31 +12,72 @@ public class Driver {
         try {
             Graph graph = new Graph();
             graph.initializeGraph(new File(args[0]));
-            //graph.printGraph();
             Scanner keyboard = new Scanner(System.in);
-            System.out.print("Please enter the starting node: ");
-            String start = keyboard.nextLine();
-            System.out.print("Please enter the ending node: ");
-            String end = keyboard.nextLine();
-            graph.findAllPaths(start, end);
-            System.out.print("Please enter a pattern: ");
-            String regex = keyboard.nextLine();
-            regex = regex.replace(".", "\\w*");
-            System.out.println(regex);
-            Pattern pattern = Pattern.compile(regex);
-
-
-            //System.out.println(matcher.matches());
-            System.out.println(graph.findPathWithPattern(start));
-            String test = graph.findPathWithPattern(start);
-            System.out.println(test);
-            Matcher matcher = pattern.matcher(test);
-            System.out.println(matcher.matches());
-            //System.out.println("All paths from \"" + start + "\" to \"" + end + "\" :");
-            graph.printAllPaths(start);
-            //graph.printAllPaths(start, 1);
-            //System.out.println("Minimum number of paths from \"" + start +"\" to \"" + end + "\" :");
-            //graph.printMinPaths(start);
+            String command = "";
+            String start = "";
+            String end = "";
+            do {
+                System.out.println("1. Find all directed paths between A and B");
+                System.out.println("2. Find directed paths between A and B with a given length");
+                System.out.println("3. Find shortest paths between A and B");
+                System.out.println("4. Find paths that match a given pattern between A and B");
+                System.out.println("Type print to print out the graph. Type quit to exit the program");
+                System.out.print("Please enter a command : ");
+                command = keyboard.nextLine();
+                switch (command) {
+                case "1":
+                    System.out.print("Please enter a starting node: ");
+                    start = keyboard.nextLine();
+                    System.out.print("Please enter an ending node: ");
+                    end = keyboard.nextLine();
+                    graph.findAllPaths(start, end);
+                    System.out.println("All possible paths from <" + start + "> to <" + end + ">:");
+                    graph.printAllPaths(start);
+                    break;
+                case "2":
+                    System.out.print("Please enter a starting node: ");
+                    start = keyboard.nextLine();
+                    System.out.print("Please enter an ending node: ");
+                    end = keyboard.nextLine();
+                    System.out.print("Please enter the length: ");
+                    int length = Integer.parseInt(keyboard.nextLine());
+                    graph.findAllPaths(start, end);
+                    graph.printAllPaths(start, length);
+                    break;
+                case "3":
+                    System.out.print("Please enter a starting node: ");
+                    start = keyboard.nextLine();
+                    System.out.print("Please enter an ending node: ");
+                    end = keyboard.nextLine();
+                    graph.findAllPaths(start,end);
+                    graph.printMinPaths(start);
+                    break;
+                case "4":
+                    System.out.print("Please enter a starting node: ");
+                    start = keyboard.nextLine();
+                    System.out.print("Please enter an ending node: ");
+                    end  = keyboard.nextLine();
+                    graph.findAllPaths(start,end);
+                    System.out.print("Please enter a pattern: ");
+                    String regex = keyboard.nextLine();
+                    String replaceDot = "";
+                    for (String node : graph.graph.keySet()) {
+                        replaceDot = "";
+                    } // for
+                    regex = regex.replace(".", "(" + replaceDot + ")");
+                    graph.findPathWithPattern(start, regex);
+                    break;
+                case "print":
+                    graph.printGraph();
+                    break;
+                case "quit":
+                    System.out.println("Exiting program...");
+                    break;
+                default:
+                    System.out.println("Invalid command. Please try again.");
+                    break;
+                } // switch
+            } while(!command.equals("quit"));
         } catch (FileNotFoundException fnfe) {
             System.err.println(fnfe);
         } // try-catch

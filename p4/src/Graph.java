@@ -3,6 +3,8 @@ package p4.src;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.io.File;
 
 /**
@@ -149,22 +151,35 @@ public class Graph {
 
     } // printMinPaths
 
-    public String findPathWithPattern(String start) {
-        String matchPath = "";
+    public void findPathWithPattern(String start, String regex) {
+        Pattern pattern = Pattern.compile(regex);
         for (Stack<Edge> stack : allPaths) {
             Stack<Edge> replicate = (Stack<Edge>) stack.clone();
             Stack<Edge> actualPath = new Stack<>();
             while (!replicate.empty()) {
                 actualPath.push(replicate.pop());
             } // while
-            matchPath = start;
+            String matchPath = start;
+            HashMap<String, String> possiblePath = new HashMap<>();
+            ArrayList<String> edgeVal = new ArrayList<>();
+            ArrayList<String> nextVal = new ArrayList<>();
             while (!actualPath.empty()) {
                 Edge temp = actualPath.pop();
+                //possiblePath.put(temp.edgeValue, temp.nextValue);
+                edgeVal.add(temp.edgeValue);
+                nextVal.add(temp.nextValue);
                 matchPath += temp.nextValue;
+                Matcher matcher = pattern.matcher(matchPath);
+                if (matcher.matches()) {
+                    System.out.println("Possible Match: " + matchPath);
+                    System.out.print(start + " -> ");
+                    for (int i = 0; i < edgeVal.size(); i++) {
+                        System.out.print("[" + edgeVal.get(i) + "] -> " + nextVal.get(i) + " ->  ");
+                    } // for
+                    System.out.println();
+                } // if
             } // while
             //return matchPath;
         } // for
-        return matchPath;
-        //System.out.println(matchPath);
     } // findPathWithPattern
 } // class
