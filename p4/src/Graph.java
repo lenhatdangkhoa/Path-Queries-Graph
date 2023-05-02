@@ -15,11 +15,13 @@ class Edge {
     String edgeValue;
     String nextValue;
 
+    // Constructor
     public Edge() {
         edgeValue = "";
         nextValue = "";
     } // edge()
 
+    // Constructor
     public Edge(String value, String nextValue) {
         edgeValue = value;
         this.nextValue = nextValue;
@@ -29,18 +31,29 @@ class Edge {
     public String toString() {
         return edgeValue + " -> " + nextValue;
     } // void
-} //
+} // Edge
 
+/**
+ * The directed acyclic graph class.
+ */
 public class Graph {
+
     HashMap<String, LinkedList<Edge>> graph;
     Stack<Edge> path;
     ArrayList<Stack<Edge>> allPaths;
+
+    // Constructor
     public Graph() {
         graph = new HashMap<>();
         path = new Stack<>();
         allPaths = new ArrayList<>();
     } // graph()
 
+    /**
+     * Initialize the graph when reading from a file.
+     * @param file the file
+     * @throws FileNotFoundException
+     */
     public void initializeGraph(File file) throws FileNotFoundException {
         Scanner read = new Scanner(file);
         while (read.hasNextLine()) {
@@ -62,6 +75,9 @@ public class Graph {
         } // while
     } // initializeGraph
 
+    /**
+     * Print graph.
+     */
     public void printGraph() {
         for (String key: graph.keySet()) {
             System.out.print(key + ": ");
@@ -72,10 +88,19 @@ public class Graph {
         } // for
     } // printGraph
 
+    /**
+     * Reset the paths.
+     */
     public void resetPaths() {
         allPaths = new ArrayList<>();
         path = new Stack<>();
     } // resetPaths
+
+    /**
+     * Find all the possible paths from starting node to ending node.
+     * @param start the starting node
+     * @param end the ending node
+     */
     public void findAllPaths(String start, String end) {
         if (start.equals(end)) {
             Stack<Edge> tempPath = (Stack<Edge>) path.clone();
@@ -87,9 +112,12 @@ public class Graph {
             if (edge.nextValue != null) findAllPaths(edge.nextValue,  end);
             path.pop();
         } // for
-
-
     } // findAllPaths
+
+    /**
+     * Print all the paths from the starting node to the ending node.
+     * @param start the starting node
+     */
     public void printAllPaths(String start) {
         for (Stack<Edge> stack : allPaths) {
             Stack<Edge> replicate = (Stack<Edge>) stack.clone();
@@ -107,6 +135,11 @@ public class Graph {
 
     } // void
 
+    /**
+     * Print all the paths from the starting node to the ending nodes with the given length.
+     * @param start the starting node
+     * @param count the length of the path
+     */
     public void printAllPaths(String start, int count) {
         for (Stack<Edge> stack : allPaths) {
             if (stack.size() == count) {
@@ -125,6 +158,10 @@ public class Graph {
         } // for
     } // void
 
+    /**
+     * A private helper method for printMinPaths(). Find the shortest path.
+     * @return the length of the shortest path
+     */
     private int findMinPath() {
         int min = allPaths.get(0).size();
         for (int i = 0; i < allPaths.size(); i++) {
@@ -135,6 +172,10 @@ public class Graph {
         return min;
     } // findMinPath
 
+    /**
+     * Print the paths with the least number of edges.
+     * @param start the starting node
+     */
     public void printMinPaths(String start) {
         int min = findMinPath();
         for (Stack<Edge> stack : allPaths) {
@@ -155,6 +196,11 @@ public class Graph {
 
     } // printMinPaths
 
+    /**
+     * Find all the paths that match the regular expression.
+     * @param start the starting node
+     * @param regex the pattern
+     */
     public void findPathWithPattern(String start, String regex) {
         Pattern pattern = Pattern.compile(regex);
         for (Stack<Edge> stack : allPaths) {
@@ -169,7 +215,6 @@ public class Graph {
             ArrayList<String> nextVal = new ArrayList<>();
             while (!actualPath.empty()) {
                 Edge temp = actualPath.pop();
-                //possiblePath.put(temp.edgeValue, temp.nextValue);
                 edgeVal.add(temp.edgeValue);
                 nextVal.add(temp.nextValue);
                 matchPath += temp.nextValue;
@@ -186,4 +231,5 @@ public class Graph {
             //return matchPath;
         } // for
     } // findPathWithPattern
-} // class
+
+} // Graph
