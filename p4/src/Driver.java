@@ -49,6 +49,7 @@ public class Driver {
                     if (!graph.graph.containsKey(start) || !graph.graph.containsKey(end)) {
                         System.out.println("No path is found.");
                     } else {
+                        System.out.println("All paths with length " + length + " from <"+ start + "> to " + end + ">: ");
                         graph.findAllPaths(start, end);
                         graph.printAllPaths(start, length);
                     }
@@ -61,6 +62,7 @@ public class Driver {
                     if (!graph.graph.containsKey(start) || !graph.graph.containsKey(end)) {
                         System.out.println("No path is found.");
                     } else {
+                        System.out.println("The shortest path(s) from <" + start + "> to <" + end + ">: ");
                         graph.findAllPaths(start,end);
                         graph.printMinPaths(start);
                     } // if-else
